@@ -15,7 +15,15 @@ connection.connect((err) => {
     console.log("Connected to database");
     
     
-    const Users = `create table Users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), email VARCHAR(25))`;
+//    const students = `create table students (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(25), email VARCHAR(25) ,age INT)`
+// connection.execute(students, (err) => {
+//     if (err) {
+//         console.log("Error when student table create",err.message)
+//         connection.end()
+//         return;
+//     }
+//    console.log('table created')
+// })
     
     
     
