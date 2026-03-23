@@ -1,0 +1,25 @@
+{
+  "name": "learn_sql",
+  "version": "1.0.0",
+  "description": "Learning sql data base",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Swati-ui-ux/LEARN_SQL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Swati-ui-ux/LEARN_SQL/issues"
+  },
+  "homepage": "https://github.com/Swati-ui-ux/LEARN_SQL#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.20.0",
+    "nodemon": "^3.1.14"
+  }
+}
