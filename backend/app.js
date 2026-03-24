@@ -4,6 +4,7 @@ const port = 3000
 const userRouter = require("./router/userRouter")
 const busRouter = require("./router/busRouter")
 const studentRouter = require("./router/studentRoute")
+const courseRoutes = require("./router/courseRoute")
 const db = require("./utils/connection_db")
 const cors = require("cors")
 app.use(cors())
@@ -19,7 +20,7 @@ app.use(express.json())
 app.use("/users",userRouter)
 app.use("/buses",busRouter)
 app.use("/students",studentRouter)
-
+app.use('/courses',courseRoutes)
 // model
 // require("./model/identityCard")
 // console.log("before")
@@ -28,7 +29,7 @@ require("./models")
 // console.log("after")
 
 
-db.sync({force:true}).then(() => {
+db.sync({alter:true}).then(() => {
 app.listen(port, () => {
 console.log("Server is running")
 })
