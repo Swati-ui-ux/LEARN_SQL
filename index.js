@@ -21,9 +21,22 @@ app.use(express.json())
 app.use("/buses",busRouter)
 app.use("/students",studentRouter)
 
-app.get("/", (req, res) => {
-res.send("hello world")
-})
+// model 
+const studentModel = require("./model/students")
+
+
+
+
+
+db.sync({ force: true }).then(() => {
 app.listen(port, () => {
-console.log("Server is runing")
+console.log("Server is running")
 })
+}).catch(() => {
+console.log("Error",err)
+})
+
+
+// app.get("/", (req, res) => {
+// res.send("hello world")
+// })
