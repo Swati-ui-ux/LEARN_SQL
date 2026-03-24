@@ -2,7 +2,7 @@
 
 // const express = require('express');
 const db = require("../utils/connection_db")
-const Users = require("../model/users")    
+const Users = require("../models/users")    
 
 const sendData = async (req, res) => {
     try {

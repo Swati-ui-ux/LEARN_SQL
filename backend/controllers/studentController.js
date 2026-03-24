@@ -1,8 +1,8 @@
 
 
 const db = require("../utils/connection_db")
-const Students = require("../model/students")
-
+const Students = require("../models/students")
+const IdentityCard = require("../models/identityCard")
 
 const postStudentData = async(req, res) => {
     try {
@@ -94,4 +94,29 @@ const deleteStudentWithId = async (req, res) => {
     
 
 }
-module.exports = {postStudentData,getAllStudentData,getStudentWithId,deleteStudentWithId,updateStudentWithId}
+
+const addingValueToStudentAndIdentityTable = async (req, res) => {
+        try {
+            const student = await Students.create(req.body.student)
+            const identityCard = await IdentityCard.create({
+                ...req.body.IdentityCard,
+                StudentId: student.id
+            
+            })
+            console.log("Student", student)
+            console.log("identity",identityCard)
+            res.status(201).json({student,identityCard})
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({error:error.message})
+        }
+    
+    }
+module.exports = {
+    postStudentData,
+    getStudentWithId,
+    getAllStudentData,
+    deleteStudentWithId,
+    updateStudentWithId,
+    addingValueToStudentAndIdentityTable
+}

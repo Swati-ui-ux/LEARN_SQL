@@ -17,19 +17,18 @@ app.use(express.json())
 
 
 app.use("/users",userRouter)
-
-
 app.use("/buses",busRouter)
 app.use("/students",studentRouter)
 
-// model 
-const studentModel = require("./model/students")
+// model
+// require("./model/identityCard")
+// console.log("before")
+require("./models")
+// require("./models/department")
+// console.log("after")
 
-const userModel = require("./model/users")
 
-const busesModel = require("./model/buses")
-
-db.sync().then(() => {
+db.sync({force:true}).then(() => {
 app.listen(port, () => {
 console.log("Server is running")
 })

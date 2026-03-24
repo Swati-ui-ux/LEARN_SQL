@@ -1,6 +1,6 @@
 
 const db = require("../utils/connection_db")
-const Buses = require("../model/buses")
+const Buses = require("../models/buses")
 const postBusData = async(req, res) => {
     try {
         const { busNumber, availableSeats, totalSeats } = req.body
