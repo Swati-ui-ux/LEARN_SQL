@@ -6,9 +6,9 @@ const Users = require("../model/users")
 
 const sendData = async (req, res) => {
     try {
-        const { email, name, age } = req.body;
+        const { email, name, age,phone } = req.body;
 
-        const user = await Users.create({ email, name, age });
+        const user = await Users.create({ email, name, age ,phone});
 
         return res.status(201).json({
             message: "User created successfully",

@@ -5,7 +5,8 @@ const userRouter = require("./router/userRouter")
 const busRouter = require("./router/busRouter")
 const studentRouter = require("./router/studentRoute")
 const db = require("./utils/connection_db")
-
+const cors = require("cors")
+app.use(cors())
 app.use(express.json())
 
 
@@ -32,11 +33,8 @@ db.sync().then(() => {
 app.listen(port, () => {
 console.log("Server is running")
 })
-}).catch(() => {
-console.log("Error",err)
+}).catch((err) => {
+console.log("Error",err.message)
 })
 
 
-// app.get("/", (req, res) => {
-// res.send("hello world")
-// })
