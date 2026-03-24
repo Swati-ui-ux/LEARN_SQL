@@ -1,20 +1,20 @@
 
 
 const db = require("../utils/connection_db")
+const Students = require("../model/students")
 
 
-
-const postStudentData = (req,res) => {
+const postStudentData = async(req, res) => {
+    try {
     const { name, email, age } = req.body
-    const insertQuery = `INSERT INTO students (name,email,age) VALUES ('${name}','${email}','${age}')`
-    db.execute(insertQuery, [name, email, age], (err) => {
-        if (err) {
-            res.status(500).send("Error when post student data", err.message)
-            db.end()
-            return
-        }
-    res.status(200).send("Student data send successfully")
-    })
+        const student = await Students.create({
+         name,email,age
+        })
+        res.status(200).send("student created",student)
+    } catch (error) {
+        console.log("Error", error.message)
+        res.status(500).send("Student no created")
+    }
 }
 
 const getAllStudentData = (req, res) => {
@@ -43,35 +43,50 @@ const getStudentWithId = (req, res) => {
     })
   
 }
-const updateStudentWithId = (req,res) => {
-    const { id } = req.params
-    const {name,email,age} = req.body
-    const updateQuery = `UPDATE Students SET name=?,email=?,age=? WHERE id=?`
-    db.execute(updateQuery, [name, email, age, id], (err, result) => {
-     if (err) {
-            console.log(err.message)
-         res.status(500).send("Error when update student with id",err.message)
-            db.end()
-            return;
-        }
-        if(result.affectedRows===0) return res.status(404).send("Student not found")
-    res.status(200).json('student updated successfully')
+
+
+
+const updateStudentWithId = async(req,res) => {
+    try {
+        const { id } = req.params
+    const { name, email, age } = req.body
     
-    })
-}
-const deleteStudentWithId = (req, res) => {
-    const { id } = req.params
-    const deleteQuery = `DELETE FROM students WHERE id =?`
-    db.execute(deleteQuery, [id], (err, result) => {
-        if (err) {
-            console.log(err.message)
-         res.status(500).send("Error when get student with id",err.message)
-            db.end()
-            return;
+        const student = await Students.findByPk(id)
+        console.log("Stdent",student)
+    if (!student) {
+    return res.status(404).send("Student not found")
         }
-        if(result.affectedRows===0) return res.status(404).send("Student not exits")
-    res.status(200).json('student deleted')
-    })
+        
+        student.name = name,
+            student.email = email,
+            student.age = age,
+            await student.save();
+    res.status(200).send("Student is updated")
+    } catch (error) {
+        res.status(500).send("Erro when update",error.message)
+    }
+}
+
+
+const deleteStudentWithId = async (req, res) => {
+    
+    try {
+        const { id } = req.params
+        const student = await Students.destroy({
+            where: {
+            id:id
+            }
+        })
+        if (!student) {
+        return res.status(404).send("Student not found")
+        }
+        res.status(200).send("Student is deleted")
+        
+        
+    } catch (error) {
+        res.status(500).send("Error when delete student",error.message)
+    }
+    
 
 }
 module.exports = {postStudentData,getAllStudentData,getStudentWithId,deleteStudentWithId,updateStudentWithId}

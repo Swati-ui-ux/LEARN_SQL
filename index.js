@@ -28,7 +28,7 @@ const studentModel = require("./model/students")
 
 
 
-db.sync({ force: true }).then(() => {
+db.sync().then(() => {
 app.listen(port, () => {
 console.log("Server is running")
 })

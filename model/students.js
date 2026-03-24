@@ -18,6 +18,13 @@ const Students = sequelize.define("Students", {
     type: DataTypes.STRING,
         allowNull:false,
     
+    },
+    age: {
+    type: DataTypes.INTEGER,
+        allowNull:false,
+    
     }
 
 })
+
+module.exports = Students
