@@ -15,7 +15,7 @@ app.use(express.json())
 
 
 
-// app.use("/users",userRouter)
+app.use("/users",userRouter)
 
 
 app.use("/buses",busRouter)
@@ -24,9 +24,9 @@ app.use("/students",studentRouter)
 // model 
 const studentModel = require("./model/students")
 
+const userModel = require("./model/users")
 
-
-
+const busesModel = require("./model/buses")
 
 db.sync().then(() => {
 app.listen(port, () => {

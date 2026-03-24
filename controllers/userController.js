@@ -1,75 +1,124 @@
 
 
 // const express = require('express');
-const db = require("../utils/connection_db")    
-let sendData = (req, res) => {
-    console.log(req.body)
-    const { email, name } = req.body;
-    const insertQuery = ` INSERT INTO Users (name, email) VALUES ('${name}', '${email}')`
-    db.execute(insertQuery,[email,name] ,(err) => {
-    if (err) {
-        console.log("Error when insert data", err.message)
-        res.status(500).send("Error when insert data",err.message)
-        db.end()
-        return;
-        }
-        console.log("post data in user table")
-        res.status(201).send(`Data inserted successfully with name: ${name} and email: ${email}`)
-    })
-    
+const db = require("../utils/connection_db")
+const Users = require("../model/users")    
 
-}
+const sendData = async (req, res) => {
+    try {
+        const { email, name, age } = req.body;
 
-const editUserData = (req, res) => {
-    const { id } = req.params
-    
-    const { name } = req.body
-    const editUserNameQuery = "UPDATE users set name = ? WHERE id = ? "
-    db.execute(editUserNameQuery, [name, id], (err,result) => {
-        if (err) {
-            console.log(err.message)
-            res.status(500).send("Error when update user data", err.message)
-            db.end()
-            return;
+        const user = await Users.create({ email, name, age });
+
+        return res.status(201).json({
+            message: "User created successfully",
+            user
+        });
+
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+            message: "Error creating user",
+            error: error.message
+        });
+    }
+};
+
+const editUserData = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, age } = req.body;
+
+        const user = await Users.findByPk(id);
+console.log("User",user)
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
         }
-        if (result.affectedRows === 0) {
-            res.status(404).send(`User with id ${id} not found`)
-            return;
+
+        // await user.update({ name, email, age });
+        user.name = name
+        user.email = email
+        user.age = age
+        await user.save()
+
+        res.status(200).json({
+            message: "User updated successfully",
+            user
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error updating user",
+            error: error.message
+        });
+    }
+};
+
+
+
+const deleteUserDataWithId = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deleted = await Users.destroy({
+            where: { id }
+        });
+
+        if (!deleted) {
+            return res.status(404).json({
+                message: "User not found"
+            });
         }
-        
-res.status(200).send("edit user data successfully")
-    
-    })
+
+        return res.status(200).json({
+            message: "User deleted successfully"
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error deleting user",
+            error: error.message
+        });
+    }
+};
+
+
+const showUserData = async (req, res) => {
+    try {
+        const users = await Users.findAll({});
+        if (users.length === 0) {
+             res.status(404).json({
+                message: "No users found"
+            });
+        }
+
+         res.status(200).json(users);
+
+    } catch (error) {
+     res.status(500).json({
+            message: "Error fetching users",
+            error: error.message
+        });
+    }
+};
+
+const getUserWithId = async (req, res) => {
+    try {
+        const {id} = req.params
+       const user = await Users.findAll({
+           where: {
+           id
+           }
+       })
+       console.log(user)
+       if (!user) {
+       return res.status(404).send("User not found")
+       }
+       res.status(200).json({message:"user with id",user})
+   } catch (error) {
+    res.status(500).send("Error when get user with id")
+   }
 }
-const deleteUserDataWithId = (req, res) => {
-    const { id } = req.params
-    const deleteQuery = `DELETE FROM users WHERE id =? `
-    db.execute(deleteQuery, [id], (err,result) => {
-        if (err) {
-            console.log("Error when delete", err.message)
-            res.status(500).send("user not deleted and not exist")
-            db.end()
-            return;
-        }
-        if (result.affectedRows === 0) {
-            res.status(404).send("user not found")
-            return
-        }
-        res.status(200).send("data deleted successfully");
-        
-    })
-}
-const showUserData = (req, res) => {
-    const showQuery = `SELECT * FROM users`
-    db.execute(showQuery, (err,result) => {
-        if (err) {
-            console.log("Error when show all data", err.message)
-            res.send(500).send("Error when show user data",err.message)
-            db.end()
-            return
-        }
-    console.log("Data",result)
-res.status(200).send(`Names: ${result[0].name} ,email : ${result[0].email}`)
-    })
-}
-module.exports={sendData,editUserData,deleteUserDataWithId,showUserData}
+module.exports={sendData,editUserData,deleteUserDataWithId,showUserData,getUserWithId}

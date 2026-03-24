@@ -17,30 +17,35 @@ const postStudentData = async(req, res) => {
     }
 }
 
-const getAllStudentData = (req, res) => {
-    const queryToGetStudent = "SELECT * FROM students" 
-    db.execute(queryToGetStudent, (err, result) => {
-        if (err) {
-            res.status(500).send("Error when get students", err.message)
-            db.end()
-            return;
+const getAllStudentData =async (req, res) => {
+    try {
+        const data = await Students.findAll({})
+        console.log(data)
+        if (!data) {
+        res.status(404).send("Student is not here")
         }
-        if(result.length===0) return res.status(404).send("Students is not here")
-     res.status(200).json(result)
-    })
+        res.status(200).json(data)
+    } catch (error) {
+        console.log("Error when get student")
+    }
 }
-const getStudentWithId = (req, res) => {
+const getStudentWithId = async(req, res) => {
+    
+    try {
     const { id } = req.params
-    const query = `SELECT * FROM students WHERE id =?`
-    db.execute(query, [id], (err, result) => {
-        if (err) {
-        res.status(500).send("Error when get student with id",err.message)
-            db.end()
-            return;
+        const data = await Students.findAll({
+            where: {
+            id
+            }
+        })
+        console.log(data)
+        if (!data) {
+        res.status(404).send("Student is not here")
         }
-        if(result.affectedRows===0) return res.status(404).send("student not found")
-    res.status(200).json(result)
-    })
+        res.status(200).json(data)
+    } catch (error) {
+        console.log("Error when get student")
+    }
   
 }
 
