@@ -18,11 +18,14 @@ const [userData,setUserData]= useState([])
   };
 
     let getAllUser =async () => {
-        try {
+      try {
+          
             const res = await axios.get("http://localhost:3000/users")
-            setUserData(res.data)
+        setUserData(res.data)
+        // toast.success("Data is here")
             console.log(res.data)
-        } catch (error) {
+      } catch (error) {
+        toast.error(error)
             console.log(error)
         }
     } 
@@ -31,12 +34,16 @@ const [userData,setUserData]= useState([])
     e.preventDefault();
 
     try {
+      if (!formData.name || !formData.email) {
+  return toast.error("Name and Email required");
+}
       const res = await axios.post(
         "http://localhost:3000/users/add",
         formData
       );
 
       console.log(res.data);
+      await getAllUser()
       toast.success("User sign up successfully");
 
       
@@ -48,8 +55,9 @@ const [userData,setUserData]= useState([])
       });
 
     } catch (error) {
-      console.log(error.message);
-      alert("Error adding user");
+      console.log(error.message)
+      console.log("Error from sign up ",error);
+      // toast.error("Error adding user");
     }
   };
 
@@ -112,14 +120,16 @@ const [userData,setUserData]= useState([])
     {/* </div> */}
             <button onClick={getAllUser}>Get All User</button>
             <ul>
-                {userData.map((el) => {
-                    return <li key={el.id} className="border p-2 m-2">{el.name} {el.email} {el.phone}
-                        <button className="bg-green-400 px-4 m-2">Edit</button>
-                        <button className="bg-red-400 px-4 m-2">Delete</button>
-                    </li>
-                
-                })}
-            </ul>
+  {
+    userData.map((el) => (
+      <li key={el.id} className="border p-2 m-2">
+        {el.name} {el.email} {el.phone}
+        <button className="bg-green-400 px-4 m-2">Edit</button>
+        <button className="bg-red-400 px-4 m-2">Delete</button>
+      </li>
+    ))
+  }
+</ul>
 </>
   );
 }

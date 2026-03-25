@@ -25,4 +25,6 @@ const Buses = sequelize.define("buses", {
 
 })
 
+
+
 module.exports =Buses

@@ -6,17 +6,19 @@ const Users = require("../models/users")
 
 const sendData = async (req, res) => {
     try {
+        console.log("Body",req.body)
         const { email, name, age,phone } = req.body;
 
         const user = await Users.create({ email, name, age ,phone});
 
-        return res.status(201).json({
+        console.log("User created",user)
+         res.status(201).json({
             message: "User created successfully",
             user
         });
 
     } catch (error) {
-        console.error(error.message);
+        console.log(error.message);
         return res.status(500).json({
             message: "Error creating user",
             error: error.message
