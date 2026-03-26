@@ -17,13 +17,16 @@ const Users = sequelize.define("User", {
         allowNull: false,
         unique: true
     },
-    age: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    phone: {
-        type: DataTypes.BIGINT   
-    }
+   
+    password: {
+  type: DataTypes.STRING,
+  allowNull: false
+},
+    role: {
+    type: DataTypes.ENUM("user", "admin"),
+    defaultValue: "user",
+    allowNull: false
+  }
 }, {
     freezeTableName: true
 });

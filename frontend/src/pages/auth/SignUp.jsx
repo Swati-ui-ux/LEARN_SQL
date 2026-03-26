@@ -6,10 +6,9 @@ function SignUp() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    age: "",
-    phone: ""
+    user: "user",
+    password: ""
   });
-const [userData,setUserData]= useState([])
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -17,18 +16,7 @@ const [userData,setUserData]= useState([])
     });
   };
 
-    let getAllUser =async () => {
-      try {
-          
-            const res = await axios.get("http://localhost:3000/users")
-        setUserData(res.data)
-        // toast.success("Data is here")
-            console.log(res.data)
-      } catch (error) {
-        toast.error(error)
-            console.log(error)
-        }
-    } 
+    
     
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,32 +26,32 @@ const [userData,setUserData]= useState([])
   return toast.error("Name and Email required");
 }
       const res = await axios.post(
-        "http://localhost:3000/users/add",
+        "http://localhost:3000/users/signup",
         formData
       );
 
       console.log(res.data);
       await getAllUser()
-      toast.success("User sign up successfully");
+      toast.success("User created successfully");
 
       
       setFormData({
         name: "",
         email: "",
-        age: "",
-        phone: ""
+        role: "user",
+        password:""
       });
 
     } catch (error) {
       console.log(error.message)
-      console.log("Error from sign up ",error);
-      // toast.error("Error adding user");
+       toast.error("Error adding user");
+     
     }
   };
 
     return (
       <>
-    {/* <div className="min-h-screen flex items-center justify-center bg-gray-100"> */}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-2xl shadow-lg w-96"
@@ -89,25 +77,24 @@ const [userData,setUserData]= useState([])
           onChange={handleChange}
           className="w-full mb-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
-
-        <input
-          type="number"
-          name="age"
-          placeholder="Age"
-          value={formData.age}       
+      
+           <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}      
           onChange={handleChange}
           className="w-full mb-6 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
-
-        <input
-          type="number"
-          name="phone"
-          placeholder="Phone"
-          value={formData.phone}      
+<select
+          name="role"
+          value={formData.role}
           onChange={handleChange}
-          className="w-full mb-6 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-
+          className="w-full mb-6 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
@@ -117,19 +104,9 @@ const [userData,setUserData]= useState([])
 
         <ToastContainer />
           </form>
-    {/* </div> */}
-            <button onClick={getAllUser}>Get All User</button>
-            <ul>
-  {
-    userData.map((el) => (
-      <li key={el.id} className="border p-2 m-2">
-        {el.name} {el.email} {el.phone}
-        <button className="bg-green-400 px-4 m-2">Edit</button>
-        <button className="bg-red-400 px-4 m-2">Delete</button>
-      </li>
-    ))
-  }
-</ul>
+           
+           </div> 
+           
 </>
   );
 }

@@ -3,27 +3,45 @@
 // const express = require('express');
 const db = require("../utils/connection_db")
 const Users = require("../models/users")    
-
+const Booking = require("../models/booking")
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt");
+require("dotenv").config()
 const sendData = async (req, res) => {
-    try {
-        console.log("Body",req.body)
-        const { email, name, age,phone } = req.body;
+  try {
+    const { email, name, role, password } = req.body;
 
-        const user = await Users.create({ email, name, age ,phone});
+    const bcrypt = require("bcrypt");
+    const jwt = require("jsonwebtoken");
 
-        console.log("User created",user)
-         res.status(201).json({
-            message: "User created successfully",
-            user
-        });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({
-            message: "Error creating user",
-            error: error.message
-        });
-    }
+    const user = await Users.create({
+      email,
+      name,
+      role,
+      password: hashedPassword
+    });
+
+    // 🔐 token generate
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const userWithoutPassword = user.toJSON();
+    delete userWithoutPassword.password;
+
+    res.status(201).json({
+      message: "User created successfully",
+      user: userWithoutPassword,
+      token   // ✅ send token
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error creating user" });
+  }
 };
 
 const editUserData = async (req, res) => {
@@ -107,20 +125,86 @@ const showUserData = async (req, res) => {
 };
 
 const getUserWithId = async (req, res) => {
-    try {
-        const {id} = req.params
-       const user = await Users.findAll({
-           where: {
-           id
-           }
-       })
-       console.log(user)
-       if (!user) {
-       return res.status(404).send("User not found")
-       }
-       res.status(200).json({message:"user with id",user})
-   } catch (error) {
-    res.status(500).send("Error when get user with id")
-   }
+  try {
+    const { id } = req.params
+
+    const user = await Users.findOne({
+      where: { id },
+      attributes: { exclude: ["password"] } 
+    })
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    res.status(200).json({
+      message: "User fetched successfully",
+      user
+    })
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "Error when getting user" })
+  }
 }
-module.exports={sendData,editUserData,deleteUserDataWithId,showUserData,getUserWithId}
+
+const showUserBookingDetail = async(req,res) => {
+    try {
+        const { id } = req.params
+        const seatNumber = await Booking.findAll({
+            where: {
+                id: id ,
+    
+            }
+        })
+        res.status(200).json({message:"Datafetched successfully",seatNumber})
+      console.log("seatNumber",seatNumber);
+        console.log("Error when get id",id);
+    } catch (err) {
+ res.status(500).json(err)
+    }
+}
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
+    const user = await Users.findOne({
+      where: { email: email.toLowerCase() }
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const userWithoutPassword = user.toJSON();
+    delete userWithoutPassword.password;
+
+    res.status(200).json({
+      token,
+      user: userWithoutPassword
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports={sendData,editUserData,deleteUserDataWithId,showUserData,getUserWithId,showUserBookingDetail,loginUser}
